@@ -612,7 +612,8 @@ function PhysicsCard({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
 
   return (
     <>
-      <group position={[3, 4, 0]}>
+      {/* Moves the anchor higher and further right on mobile */}
+      <group position={isMobile ? [1.5, 3.5, 0] : [3, 4, 0]}>
         <RigidBody ref={fixed} {...segProps} type="fixed" />
         <RigidBody position={[0.5,0,0]} ref={j1} {...segProps}><BallCollider args={[0.1]} /></RigidBody>
         <RigidBody position={[1.0,0,0]} ref={j2} {...segProps}><BallCollider args={[0.1]} /></RigidBody>
@@ -624,11 +625,13 @@ function PhysicsCard({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
           {...segProps}
           type={dragged ? 'kinematicPosition' : 'dynamic'}
         >
-          <CuboidCollider args={[0.8,1.125,0.01]} />
-
+          {/* Shrinks the invisible physics boundary on mobile */}
+          <CuboidCollider args={isMobile ? [0.6, 0.85, 0.01] : [0.88, 1.25, 0.01]} />
+          {/* Shrinks the visual card size on mobile */}
           <group
-            scale={2.25}
-            position={[0,-1.2,-0.05]}
+            
+            scale={isMobile ? 1.6 : 2.50}
+            position={isMobile ? [0,-0.9,-0.05] : [0,-1.35,-0.05]}
             onPointerOver={() => canDrag && hover(true)}
             onPointerOut={()  => canDrag && hover(false)}
             onPointerUp={e => {
@@ -678,7 +681,8 @@ function PhysicsCard({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
 function LanyardScene({ isMobile }) {
   return (
     <Physics interpolate gravity={[0,-40,0]} timeStep={1/60}>
-      {!isMobile && <PhysicsCard isMobile={isMobile} />}
+      {/* Removed the !isMobile check so the card renders on all devices */}
+      <PhysicsCard isMobile={isMobile} />
     </Physics>
   );
 }
@@ -1094,6 +1098,7 @@ function HeroSection({ showApp }) {
 
       <style>{`
         @media(min-width:768px){ .hero-pad{ padding-left:120px!important; padding-right:60px!important; } }
+        @media(max-width:767px){ .hero-pad{ padding-top: 40px!important; z-index: 50!important; pointer-events: none; } }
       `}</style>
     </section>
   );
@@ -1269,7 +1274,7 @@ function AboutSection() {
 
       <style>{`
         @media(min-width:768px){ .about-pad{ padding:80px 60px 30px 120px!important; } }
-        @media(max-width:767px){ .about-photo{ display:none!important; } }
+        @media(max-width:767px){ .about-photo{ display:flex!important; justify-content:center!important; width:100%; margin-top:40px; } }
       `}</style>
     </section>
   );
