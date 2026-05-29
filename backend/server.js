@@ -52,4 +52,6 @@ app.post('/api/virtual-irfan', async (req, res) => {
   }
 });
 
+// Add this simple health-check route
+app.get('/', (req, res) => res.send('Irfan Bot Backend is Awake!'));
 app.listen(5000, () => console.log('Virtual Twin API active on port 5000'));
