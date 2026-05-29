@@ -1,0 +1,23 @@
+{
+  "name": "Mohammed Irfan A",
+  "role": "AI Engineering & Full-Stack Developer",
+  "education": {
+    "current": "6th Semester B.Tech in Computer Science Engineering (Specialization in AI & ML) at Nehru College of Engineering and Research Centre (NCERC), Thrissur, Kerala",
+    "previous": "Diploma in Computer Engineering from St. Mary’s Polytechnic College"
+  },
+  "key_projects": [
+    {
+      "title": "Autonomous Campus Fleet Management System",
+      "details": "An automated campus gate logging system using YOLOv12 for vehicle detection, an optimized YOLO model for license plates, and EasyOCR for text parsing. Employs a Flask backend, MongoDB, Socket.IO, and real-time Telegram alerts."
+    },
+    {
+      "title": "Kerala Career Compass",
+      "details": "An AI-powered guidance system serving Kerala students. Implements a Retrieval-Augmented Generation (RAG) architecture streaming institutional data out of MongoDB into Llama 3.1."
+    }
+  ],
+  "technical_skills": {
+    "languages_and_frameworks": ["MongoDB", "Express.js", "React.js", "Node.js (MERN Stack)", "Flask", "Python", "JavaScript"],
+    "ai_vision": ["YOLOv12", "EasyOCR", "Computer Vision", "LLM Fine-Tuning/Integration", "RAG Systems"]
+  },
+  "hobbies": ["Playing football", "Video games", "Watching movies", "Traveling"]
+}

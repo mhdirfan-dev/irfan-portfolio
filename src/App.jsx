@@ -1,21 +1,21 @@
 /**
  * ================================================================
- *  Mohammed Irfan A — Portfolio (Single File App.jsx)
- *  Faithful rebuild of github.com/RifqiMuhammadAliya12/portofoliov1
- *  with the real Three.js / Rapier physics lanyard card animation.
+ * Mohammed Irfan A — Portfolio (Single File App.jsx)
+ * Faithful rebuild of github.com/RifqiMuhammadAliya12/portofoliov1
+ * with the real Three.js / Rapier physics lanyard card animation.
  *
- *  SETUP GUIDE (read bottom of this file too):
- *  1.  npx create-react-app my-portfolio
- *  2.  cd my-portfolio
- *  3.  npm install three @react-three/fiber @react-three/drei
- *                  @react-three/rapier meshline framer-motion
- *                  lucide-react gsap
- *  4.  Replace src/App.jsx with this file.
- *  5.  npm start
+ * SETUP GUIDE (read bottom of this file too):
+ * 1.  npx create-react-app my-portfolio
+ * 2.  cd my-portfolio
+ * 3.  npm install three @react-three/fiber @react-three/drei
+ * @react-three/rapier meshline framer-motion
+ * lucide-react gsap
+ * 4.  Replace src/App.jsx with this file.
+ * 5.  npm start
  *
- *  The kartu.glb and bandd.png assets from the original repo are
- *  embedded / replaced with programmatic equivalents so you need
- *  NO external files.  Just npm install + copy-paste.
+ * The kartu.glb and bandd.png assets from the original repo are
+ * embedded / replaced with programmatic equivalents so you need
+ * NO external files.  Just npm install + copy-paste.
  * ================================================================
  */
 
@@ -32,6 +32,7 @@ import {
 } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import { motion, AnimatePresence } from 'framer-motion';
+
 // SVG replacements for Github & Linkedin (removed in newer lucide-react)
 import {
   Mail, ExternalLink, Code, Award, Globe, FileText,
@@ -39,6 +40,7 @@ import {
   Code2, User, X, Menu,
   Cpu, MonitorPlay, Zap,
 } from 'lucide-react';
+
 const Github = (props) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
     strokeLinecap="round" strokeLinejoin="round"
@@ -56,8 +58,6 @@ const Linkedin = (props) => (
     <circle cx="4" cy="4" r="2"/>
   </svg>
 );
-
-
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
@@ -301,7 +301,7 @@ function AnimatedBackground() {
         r.current.style.transition = 'transform 1.2s ease-out';
       });
     };
-    window.addEventListener('scroll', handler);
+    window.addEventListener('scroll', handler, { passive: true });
     handler();
     return () => window.removeEventListener('scroll', handler);
   }, []);
@@ -463,7 +463,7 @@ function PhysicsCard({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
       ctx.clip();
       
       // Apply the same grayscale/brightness filter you used in the HTML img!
-      ctx.filter = 'grayscale(10%) brightness(65%)';
+      ctx.filter = 'grayscale(5%) brightness(50%)';
       
       // Draw image centered and scaled to fit the 176x176 circle
       ctx.drawImage(img, W/2 - 88, 220 - 88, 176, 176);
@@ -830,7 +830,7 @@ function Navbar() {
         if (r.top <= 140 && r.bottom >= 140) { setActive(id); break; }
       }
     };
-    window.addEventListener('scroll', handler);
+    window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
@@ -1134,7 +1134,7 @@ function AboutSection() {
     >
       <div style={{ width:'100%' }}>
         <div style={{ display:'flex', flexDirection:'row', alignItems:'center',
-                      justifyContent:'space-between', gap:32, flexWrap:'wrap' }}>
+                       justifyContent:'space-between', gap:32, flexWrap:'wrap' }}>
 
           {/* Left */}
           <motion.div
@@ -1796,7 +1796,7 @@ function ContactSection() {
       >
         {[
           { label:'Email',    value:'mohammedirfan.a02@gmail.com',             href:'mailto:mohammedirfan.a02@gmail.com' },
-          { label:'Phone',    value:'+91 7034208710',                           href:'tel:+917034208710' },
+          { label:'Phone',    value:'+91 7034208710',                            href:'tel:+917034208710' },
           { label:'LinkedIn', value:'linkedin.com/in/mohammed-irfan-a-7ba342368', href:'https://www.linkedin.com/in/mohammed-irfan-a-7ba342368' },
           { label:'Location', value:'Palakkad, Kerala',                         href:null },
         ].map((item, i) => (
@@ -1832,6 +1832,294 @@ function Footer() {
         Designed &amp; Engineered by Mohammed Irfan A // {new Date().getFullYear()}
       </p>
     </footer>
+  );
+}
+
+/* ================================================================
+   VIRTUAL IRFAN BOT (Voice & Text Mode - Fixed Mic)
+================================================================ */
+function VirtualIrfanBot() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Voice & Listening States
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(true); 
+  
+  const chatEndRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const isVoiceModeRef = useRef(true); 
+  
+  // FIX: This prevents React from forgetting the chat history while the mic is on
+  const chatHistoryRef = useRef([]);
+  useEffect(() => {
+    chatHistoryRef.current = chatHistory;
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory, message]);
+
+  // Initialize Speech Recognition (Speech-to-Text)
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true; // FIX: Forces mic to stay on until you finish
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onstart = () => {
+        console.log("🎤 Microphone Activated!");
+        setIsListening(true);
+      };
+      
+      recognitionRef.current.onerror = (e) => {
+        console.error("🎤 Microphone Error:", e.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        console.log("🎤 Microphone Deactivated.");
+        setIsListening(false);
+      };
+      
+      recognitionRef.current.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        
+        // Update input box with what it hears right now
+        if (interimTranscript) {
+          setMessage(interimTranscript);
+        }
+
+        // When you stop talking, send it!
+        if (finalTranscript.trim()) {
+          setMessage(finalTranscript);
+          recognitionRef.current.stop(); // Stop listening while we fetch the answer
+          handleSendMessage(null, finalTranscript);
+        }
+      };
+    } else {
+      console.warn("Speech Recognition is not supported. Please use Google Chrome.");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      window.speechSynthesis.cancel();
+      if (recognitionRef.current) recognitionRef.current.stop();
+    }
+  }, [isOpen]);
+
+  const startListening = () => {
+    if (recognitionRef.current && !isListening && isVoiceModeRef.current) {
+      try {
+        setMessage(''); 
+        recognitionRef.current.start();
+      } catch (e) {
+        console.log("Mic is already listening or busy.");
+      }
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+    }
+  };
+
+  const toggleVoiceMode = () => {
+    const newMode = !isVoiceMode;
+    setIsVoiceMode(newMode);
+    isVoiceModeRef.current = newMode;
+    
+    if (!newMode) {
+      window.speechSynthesis.cancel();
+      stopListening();
+      setIsSpeaking(false);
+    }
+  };
+
+  // Text-To-Speech (English Only)
+  const speakText = (text) => {
+    if (!('speechSynthesis' in window) || !isVoiceModeRef.current) return;
+
+    window.speechSynthesis.cancel(); 
+
+    const cleanText = text.replace(/[*#_`]/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+
+    const voices = window.speechSynthesis.getVoices();
+    const engVoices = voices.filter(v => v.lang.includes('en-IN') || v.lang.includes('en-US') || v.lang.includes('en-GB'));
+    const preferredVoice = engVoices.find(v => v.name.includes('Male') || v.name.includes('Google')) || engVoices[0];
+    
+    if (preferredVoice) utterance.voice = preferredVoice;
+    utterance.lang = 'en-US';
+    utterance.rate = 1.0;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      // Automatically turn the mic back on after the bot finishes speaking
+      if (isVoiceModeRef.current) {
+        setTimeout(startListening, 400); 
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleSendMessage = async (e, voiceTranscript = null) => {
+    if (e) e.preventDefault();
+    
+    const textToSend = voiceTranscript || message;
+    if (!textToSend.trim() || isLoading) return;
+
+    const userMessage = { role: 'user', content: textToSend };
+    // Use the latest chat history to update the screen
+    const updatedHistory = [...chatHistoryRef.current, userMessage];
+    setChatHistory(updatedHistory);
+    
+    setMessage(''); 
+    setIsLoading(true);
+    stopListening(); 
+
+    try {
+      const response = await fetch('http://localhost:5000/api/virtual-irfan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Use the ref here to prevent the "stale memory" bug
+        body: JSON.stringify({ message: textToSend, chatHistory: chatHistoryRef.current }),
+      });
+      
+      const data = await response.json();
+      const botMessage = { role: 'assistant', content: data.reply };
+      
+      setChatHistory(prev => [...prev, botMessage]);
+      
+      if (isVoiceModeRef.current) {
+        speakText(data.reply);
+      }
+    } catch (err) {
+      console.error(err);
+      setChatHistory(prev => [...prev, { role: 'assistant', content: 'Sorry, my server is offline right now.' }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleBotOpen = () => {
+    const opening = !isOpen;
+    setIsOpen(opening);
+    
+    if (opening && chatHistory.length === 0) {
+      const initialGreeting = "Hi, I am the virtual AI assistant for Mohammed Irfan. How can I help you today?";
+      setChatHistory([{ role: 'assistant', content: initialGreeting }]);
+      
+      if (isVoiceModeRef.current) {
+        setTimeout(() => speakText(initialGreeting), 600);
+      }
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, fontFamily: 'sans-serif' }}>
+      
+      <motion.button 
+        whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+        onClick={toggleBotOpen}
+        style={{
+          width: '60px', height: '60px', borderRadius: '50%', background: '#0070f3',
+          color: '#fff', border: 'none', cursor: 'pointer', fontSize: '24px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}
+      >
+        {isOpen ? '✕' : '🤖'}
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            style={{
+              position: 'absolute', bottom: '80px', right: '0', width: '350px',
+              height: '480px', background: '#1a1a1a', borderRadius: '12px',
+              border: '1px solid #333', display: 'flex', flexDirection: 'column',
+              overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
+            }}
+          >
+            {/* Header */}
+            <div style={{ padding: '16px', background: '#222', borderBottom: '1px solid #333', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <b style={{ display: 'block', fontSize: '14px' }}>Virtual Irfan</b>
+                <span style={{ fontSize: '11px', color: isListening ? '#10b981' : '#888' }}>
+                  {isListening ? '🎙️ Listening to you...' : isSpeaking ? '🔊 Speaking...' : 'Online'}
+                </span>
+              </div>
+              
+              <button 
+                onClick={toggleVoiceMode} 
+                style={{ 
+                  background: isVoiceMode ? '#ff3333' : '#0070f3', 
+                  border: 'none', borderRadius: '4px', color: '#fff', 
+                  padding: '6px 10px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold'
+                }}
+              >
+                {isVoiceMode ? 'Stop Voice Mode' : 'Start Voice Mode'}
+              </button>
+            </div>
+
+            {/* Conversation Logs */}
+            <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {chatHistory.map((msg, idx) => (
+                <div key={idx} style={{
+                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                  background: msg.role === 'user' ? '#0070f3' : '#2a2a2a',
+                  color: '#fff', padding: '10px 14px', borderRadius: '8px',
+                  maxWidth: '80%', fontSize: '13px', lineHeight: '1.4'
+                }}>
+                  {msg.content}
+                </div>
+              ))}
+              {isLoading && <div style={{ color: '#555', fontSize: '12px', alignSelf: 'flex-start' }}>Thinking...</div>}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Prompt Input Form */}
+            <form onSubmit={(e) => handleSendMessage(e, null)} style={{ display: 'flex', borderTop: '1px solid #333', background: '#222' }}>
+              <input
+                type="text" value={message} onChange={(e) => setMessage(e.target.value)}
+                placeholder={isVoiceMode ? "Speak now or type..." : "Type your query..."}
+                style={{ flex: 1, padding: '14px', background: 'transparent', color: '#fff', border: 'none', outline: 'none', fontSize: '13px' }}
+              />
+              
+              {/* Manual Mic trigger */}
+              {isVoiceMode && !isListening && !isSpeaking && (
+                <button type="button" onClick={startListening} style={{ padding: '0 10px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '16px' }} title="Click to speak">
+                  🎙️
+                </button>
+              )}
+              
+              <button type="submit" style={{ padding: '0 18px', background: 'transparent', color: '#0070f3', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                Send
+              </button>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -1886,77 +2174,12 @@ export default function App() {
             <ContactSection/>
           </main>
           <Footer/>
+          
+          {/* THE VIRTUAL IRFAN BOT COMPONENT IS RENDERED HERE */}
+          <VirtualIrfanBot />
+          
         </>
       )}
     </div>
   );
 }
-
-/*
-================================================================
-  SETUP GUIDE — copy-paste into your terminal
-================================================================
-
-  # 1. Create a new React project
-  npx create-react-app irfan-portfolio
-  cd irfan-portfolio
-
-  # 2. Install all dependencies
-  npm install three @react-three/fiber @react-three/drei \
-              @react-three/rapier meshline \
-              framer-motion lucide-react gsap
-
-  # 3. Replace App.jsx
-  #    Copy this entire file to  src/App.jsx
-
-  # 4. Start dev server
-  npm start
-
-  ─────────────────────────────────────────────────
-  WHAT YOU GET (exact match to the video):
-
-  ✅  Welcome / intro loading screen
-      (icons spin in → "Welcome to my Portfolio Website" → domain capsule)
-
-  ✅  Physics-based 3D lanyard ID card
-      • Real Rapier rigid-body rope joints
-      • Drag the card with your mouse
-      • Realistic swing & settle physics
-      • Custom programmatic card texture with:
-          - Your name, role, initials avatar
-          - Skill tags, barcode decoration, location
-
-  ✅  Animated background (moving light blobs + grid)
-
-  ✅  Animated navbar (appears after intro, tracks active section)
-
-  ✅  Hero section
-      • Staggered text reveal after intro
-      • Typing animation (4 roles cycling)
-      • Skill pill badges
-
-  ✅  About section
-      • Name split over 3 lines (original style)
-      • Quote card, Download CV + View Projects buttons
-      • Stat cards (Projects / Certificates / Works)
-
-  ✅  Portfolio Showcase
-      • Tab switcher: Projects | Experience | Tech Stack
-      • All 3 projects with icons & tech tags
-      • Both experience entries
-      • All 4 skill group cards
-
-  ✅  Contact section
-      • Animated floating heading
-      • Working contact form (client-side)
-      • Email / LinkedIn / GitHub links
-
-  ✅  Footer
-
-  ─────────────────────────────────────────────────
-  NOTE:  The original repo uses a .glb 3D model for
-  the card shape. This file generates the card mesh
-  programmatically so you don't need any external
-  asset files — everything works out of the box.
-================================================================
-*/
