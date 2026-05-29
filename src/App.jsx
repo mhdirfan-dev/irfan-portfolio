@@ -1995,7 +1995,7 @@ function VirtualIrfanBot() {
     stopListening(); 
 
     try {
-      const response = await fetch('http://localhost:5000/api/virtual-irfan', {
+      const response = await fetch('https://irfan-bot-backend.onrender.com/api/virtual-irfan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // Use the ref here to prevent the "stale memory" bug
