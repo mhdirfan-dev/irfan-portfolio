@@ -681,8 +681,8 @@ function PhysicsCard({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
 function LanyardScene({ isMobile }) {
   return (
     <Physics interpolate gravity={[0,-40,0]} timeStep={1/60}>
-      {/* Removed the !isMobile check so the card renders on all devices */}
-      <PhysicsCard isMobile={isMobile} />
+      {/* Hides the 3D card entirely on mobile screens for a cleaner view */}
+      {!isMobile && <PhysicsCard isMobile={isMobile} />}
     </Physics>
   );
 }
@@ -1293,8 +1293,10 @@ function PortfolioCard({ project: p, index }) {
       initial={{ opacity:0, x: index%2===0 ? -50 : 50, y:20 }}
       whileInView={{ opacity:1, x:0, y:0 }}
       transition={{ duration:0.5 }}
-      onPointerEnter={() => setExpanded(true)}
-      onPointerLeave={() => setExpanded(false)}
+      /* onHoverStart/End ONLY fire for a real mouse. onClick allows mobile users to tap to open/close! */
+      onHoverStart={() => setExpanded(true)}
+      onHoverEnd={() => setExpanded(false)}
+      onClick={() => setExpanded(!expanded)}
       style={{
         position:'relative', borderRadius:26,
         border:'1px solid rgba(255,255,255,0.1)',
