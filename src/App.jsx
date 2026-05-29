@@ -1419,23 +1419,19 @@ function PortfolioShowcase() {
       <motion.div
         initial={{ opacity:0, y:30 }} whileInView={{ opacity:1, y:0 }}
         transition={{ duration:0.8 }}
-        style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1,
+        className="stats-grid"
+        style={{ display:'grid', gap:1,
                  background:'rgba(255,255,255,0.1)',
                  border:'1px solid rgba(255,255,255,0.1)',
                  borderRadius:12, overflow:'hidden', marginBottom:48 }}
       >
         {[
-          // Counts the exact number of projects you have (3)
           { label:'PROJECTS', value: DATA.projects.length },
-          
-          // Counts the exact number of experiences you have (1)
           { label:'EXPERIENCE', value: DATA.experience.length },
-          
-          // Adds up every single skill inside your DATA.skills categories automatically (will be 23)
           { label:'TECHNOLOGIES', value: DATA.skills.reduce((total, group) => total + group.items.length, 0) },
         ].map(s => (
-          <div key={s.label} style={{
-            background:'var(--bg-primary)', padding:24,
+          <div key={s.label} className="stat-card" style={{
+            background:'var(--bg-primary)', 
             display:'flex', justifyContent:'space-between', alignItems:'center',
           }}>
             <span className="dm-mono" style={{
@@ -1556,7 +1552,15 @@ function PortfolioShowcase() {
       </div>
 
       <style>{`
-        @media(min-width:768px){ .port-pad{ padding:96px 80px!important; } }
+        @media(min-width:768px){ 
+          .port-pad{ padding:96px 80px!important; } 
+          .stats-grid{ grid-template-columns: repeat(3, 1fr); }
+          .stat-card{ padding: 24px; }
+        }
+        @media(max-width:767px){ 
+          .stats-grid{ grid-template-columns: 1fr; }
+          .stat-card{ padding: 16px 20px; }
+        }
       `}</style>
     </section>
   );
