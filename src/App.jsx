@@ -1835,8 +1835,9 @@ function Footer() {
   );
 }
 
+
 /* ================================================================
-   VIRTUAL IRFAN BOT (Voice & Text Mode - Fixed Mic)
+   VIRTUAL IRFAN BOT (Voice, Text, & Avatar Update)
 ================================================================ */
 function VirtualIrfanBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -1852,9 +1853,9 @@ function VirtualIrfanBot() {
   const chatEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const isVoiceModeRef = useRef(true); 
-  
-  // FIX: This prevents React from forgetting the chat history while the mic is on
+  const silenceTimerRef = useRef(null); // Timer to fix the cutoff issue
   const chatHistoryRef = useRef([]);
+
   useEffect(() => {
     chatHistoryRef.current = chatHistory;
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -1865,48 +1866,39 @@ function VirtualIrfanBot() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true; // FIX: Forces mic to stay on until you finish
+      recognitionRef.current.continuous = true; 
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = 'en-US';
 
-      recognitionRef.current.onstart = () => {
-        console.log("🎤 Microphone Activated!");
-        setIsListening(true);
-      };
+      recognitionRef.current.onstart = () => setIsListening(true);
       
       recognitionRef.current.onerror = (e) => {
         console.error("🎤 Microphone Error:", e.error);
         setIsListening(false);
       };
 
-      recognitionRef.current.onend = () => {
-        console.log("🎤 Microphone Deactivated.");
-        setIsListening(false);
-      };
+      recognitionRef.current.onend = () => setIsListening(false);
       
       recognitionRef.current.onresult = (event) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
+        let currentText = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
+          currentText += event.results[i][0].transcript;
         }
         
-        // Update input box with what it hears right now
-        if (interimTranscript) {
-          setMessage(interimTranscript);
+        setMessage(currentText);
+
+        // CLEAR THE TIMER EVERY TIME A NEW WORD IS DETECTED
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
         }
 
-        // When you stop talking, send it!
-        if (finalTranscript.trim()) {
-          setMessage(finalTranscript);
-          recognitionRef.current.stop(); // Stop listening while we fetch the answer
-          handleSendMessage(null, finalTranscript);
-        }
+        // WAIT 2 SECONDS BEFORE SENDING (Fixes the premature cutoff issue)
+        silenceTimerRef.current = setTimeout(() => {
+          if (currentText.trim()) {
+            recognitionRef.current.stop();
+            handleSendMessage(null, currentText);
+          }
+        }, 2000); 
       };
     } else {
       console.warn("Speech Recognition is not supported. Please use Google Chrome.");
@@ -1917,6 +1909,7 @@ function VirtualIrfanBot() {
     if (!isOpen) {
       window.speechSynthesis.cancel();
       if (recognitionRef.current) recognitionRef.current.stop();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     }
   }, [isOpen]);
 
@@ -1934,6 +1927,7 @@ function VirtualIrfanBot() {
   const stopListening = () => {
     if (recognitionRef.current && isListening) {
       recognitionRef.current.stop();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     }
   };
 
@@ -1949,7 +1943,7 @@ function VirtualIrfanBot() {
     }
   };
 
-  // Text-To-Speech (English Only)
+  // Text-To-Speech Engine
   const speakText = (text) => {
     if (!('speechSynthesis' in window) || !isVoiceModeRef.current) return;
 
@@ -1958,19 +1952,25 @@ function VirtualIrfanBot() {
     const cleanText = text.replace(/[*#_`]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
 
+    // FIX: Strictly search for male voice identifiers
     const voices = window.speechSynthesis.getVoices();
-    const engVoices = voices.filter(v => v.lang.includes('en-IN') || v.lang.includes('en-US') || v.lang.includes('en-GB'));
-    const preferredVoice = engVoices.find(v => v.name.includes('Male') || v.name.includes('Google')) || engVoices[0];
+    const engVoices = voices.filter(v => v.lang.includes('en'));
+    const maleVoice = engVoices.find(v => 
+      v.name.toLowerCase().includes('male') || 
+      v.name.toLowerCase().includes('david') || 
+      v.name.toLowerCase().includes('mark') ||
+      v.name.toLowerCase().includes('rishi')
+    );
     
-    if (preferredVoice) utterance.voice = preferredVoice;
+    if (maleVoice) utterance.voice = maleVoice;
     utterance.lang = 'en-US';
     utterance.rate = 1.0;
+    utterance.pitch = 0.9; // Lower pitch slightly for a more natural male tone
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onerror = () => setIsSpeaking(false);
     utterance.onend = () => {
       setIsSpeaking(false);
-      // Automatically turn the mic back on after the bot finishes speaking
       if (isVoiceModeRef.current) {
         setTimeout(startListening, 400); 
       }
@@ -1985,8 +1985,9 @@ function VirtualIrfanBot() {
     const textToSend = voiceTranscript || message;
     if (!textToSend.trim() || isLoading) return;
 
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
     const userMessage = { role: 'user', content: textToSend };
-    // Use the latest chat history to update the screen
     const updatedHistory = [...chatHistoryRef.current, userMessage];
     setChatHistory(updatedHistory);
     
@@ -1998,7 +1999,6 @@ function VirtualIrfanBot() {
       const response = await fetch('https://irfan-bot-backend.onrender.com/api/virtual-irfan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Use the ref here to prevent the "stale memory" bug
         body: JSON.stringify({ message: textToSend, chatHistory: chatHistoryRef.current }),
       });
       
@@ -2035,16 +2035,27 @@ function VirtualIrfanBot() {
   return (
     <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, fontFamily: 'sans-serif' }}>
       
+      {/* UPDATE: Image Avatar Button */}
       <motion.button 
-        whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
         onClick={toggleBotOpen}
         style={{
-          width: '60px', height: '60px', borderRadius: '50%', background: '#0070f3',
-          color: '#fff', border: 'none', cursor: 'pointer', fontSize: '24px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+          width: '75px', height: '75px', background: 'transparent',
+          border: 'none', cursor: 'pointer', padding: 0,
+          filter: isOpen ? 'none' : 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'
         }}
       >
-        {isOpen ? '✕' : '🤖'}
+        {isOpen ? (
+          <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#ff3333', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', margin: '0 auto' }}>
+            ✕
+          </div>
+        ) : (
+          <img 
+            src="/bot-avatar.jpg" 
+            alt="Irfan Bot Avatar" 
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          />
+        )}
       </motion.button>
 
       <AnimatePresence>
@@ -2054,7 +2065,7 @@ function VirtualIrfanBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             style={{
-              position: 'absolute', bottom: '80px', right: '0', width: '350px',
+              position: 'absolute', bottom: '90px', right: '0', width: '350px',
               height: '480px', background: '#1a1a1a', borderRadius: '12px',
               border: '1px solid #333', display: 'flex', flexDirection: 'column',
               overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
