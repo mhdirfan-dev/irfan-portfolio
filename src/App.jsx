@@ -120,7 +120,24 @@ B.Tech in Computer Science (AI & ML), transitioning from theoretical learning to
 deploying real-time monitoring solutions.`,
   stats: { projects: 3, certificates: 4, stack: 12 },
   heroSkills: ['Python', 'React.js', 'YOLOv12'],
- projects: [
+projects: [
+    {
+      title: 'BizBrain',
+      role:  'AI Business Intelligence Agent',
+      desc:  'An AI-powered business intelligence agent that acts as a strategic brain-for-hire for entrepreneurs. It digests your business data (products, market, finances) and generates psychology-backed, profit-driving strategies grounded in behavioral economics.\n\nBuilt on a 6-pillar reasoning engine, it provides real-time LLaMA 3.3 streaming chat, an 8-dimension BizBrain health score, automated 30-60-90 day roadmaps, live SWOT boards, competitor profiling, and a "what-if" profit simulator.',
+      tech:  ['React 18', 'Node.js', 'Express', 'LLaMA 3.3 70B', 'Groq API', 'Vite'],
+      icon:  Zap,
+      color: '#f59e0b', // Amber color for a "Brain" theme
+      demo:  'https://biz-brain-nine.vercel.app/',
+      image: '/bizbrain.png', // <-- The screenshot file
+      features: [
+        'Strategy Chat: Real-time conversational AI powered by LLaMA 3.3 via Groq',
+        'BizBrain Score: 8-dimension strategic health score with ranked quick wins',
+        '30-60-90 Day Roadmap: Phased, task-by-task tailored action plan',
+        'SWOT Live Board & Competitor Profiler: Threat scores and counter-playbooks',
+        'Profit Simulator: 4-month P&L projection for what-if scenarios',
+      ],
+    },
     {
       title: 'Kerala Career Compass',
       role:  'AI-Powered Career Guidance Platform for Kerala Students',
@@ -129,6 +146,7 @@ deploying real-time monitoring solutions.`,
       icon:  Globe,
       color: '#22d3ee',
       demo:  'https://kerala-compass-frontend.vercel.app/',
+      image: '/kerala-compass.png', // <-- The screenshot file
       features: [
         'Bilingual AI counselor (English + Malayalam) powered by Llama 3.1',
         'RAG architecture — real college data injected as AI context for accurate answers',
@@ -145,6 +163,7 @@ deploying real-time monitoring solutions.`,
       icon:  MonitorPlay,
       color: '#6366f1',
       demo:  'https://ncerc-fleet-management.vercel.app/',
+      image: '/ncerc.png', // <-- The screenshot file
       features: [
         'Dual AI model pipeline — YOLOv12 for bus detection + custom YOLO for number plate detection',
         'EasyOCR with Kerala number plate format validation and OCR error auto-correction',
@@ -161,6 +180,7 @@ deploying real-time monitoring solutions.`,
       icon:  Cpu,
       color: '#a855f7',
       demo:  'https://picto-pro.vercel.app/',
+      image: '/picto.png', // <-- The screenshot file
       features: [
         'Text-to-Video generation — type a description, get a video',
         'Image-to-Video conversion for educational content',
@@ -1280,6 +1300,7 @@ function AboutSection() {
   );
 }
 
+
 /* ================================================================
    PORTFOLIO SHOWCASE
 ================================================================ */
@@ -1289,11 +1310,10 @@ function PortfolioCard({ project: p, index }) {
 
   return (
     <motion.div
-      layout // Enables smooth height animation
+      layout 
       initial={{ opacity:0, x: index%2===0 ? -50 : 50, y:20 }}
       whileInView={{ opacity:1, x:0, y:0 }}
       transition={{ duration:0.5 }}
-      /* onHoverStart/End ONLY fire for a real mouse. onClick allows mobile users to tap to open/close! */
       onHoverStart={() => setExpanded(true)}
       onHoverEnd={() => setExpanded(false)}
       onClick={() => setExpanded(!expanded)}
@@ -1302,10 +1322,10 @@ function PortfolioCard({ project: p, index }) {
         border:'1px solid rgba(255,255,255,0.1)',
         background:'rgba(255,255,255,0.05)', padding:24,
         display:'flex', flexDirection:'column',
-        overflow: 'hidden'
+        overflow: 'hidden', cursor: 'pointer'
       }}
     >
-      {/* 1. Title and Role at the Top */}
+      {/* 1. Title and Role */}
       <motion.h3 layout style={{ fontSize:18, fontWeight:700, marginBottom:6, lineHeight:1.3, color:'white' }}>
         {p.title}
       </motion.h3>
@@ -1313,15 +1333,26 @@ function PortfolioCard({ project: p, index }) {
         {p.role}
       </motion.p>
 
-      {/* 2. Image / Icon Area */}
+      {/* 2. Image / Icon Area (UPDATED FOR SCREENSHOTS) */}
       <motion.div layout style={{
-        width:'100%', height:100, borderRadius:16,
+        width:'100%', height: 170, borderRadius:16,
         display:'flex', alignItems:'center', justifyContent:'center',
-        background:`linear-gradient(135deg,${p.color}22,${p.color}11)`,
+        background: p.image ? '#000' : `linear-gradient(135deg,${p.color}22,${p.color}11)`,
         marginBottom:16, border:'1px solid rgba(255,255,255,0.08)',
-        flexShrink: 0
+        flexShrink: 0, overflow: 'hidden', position: 'relative'
       }}>
-        {Icon && <Icon size={38} color={p.color} />}
+        {p.image ? (
+          <img 
+            src={p.image} 
+            alt={p.title} 
+            style={{ 
+              width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top',
+              opacity: expanded ? 1 : 0.75, transition: 'opacity 0.3s ease'
+            }} 
+          />
+        ) : (
+          Icon && <Icon size={38} color={p.color} />
+        )}
       </motion.div>
 
       {/* 3. Details Section */}
@@ -1334,7 +1365,7 @@ function PortfolioCard({ project: p, index }) {
           {p.desc}
         </p>
 
-        {/* Key features (Only show on hover) */}
+        {/* Key features */}
         <AnimatePresence>
           {expanded && p.features && (
             <motion.ul
@@ -1367,6 +1398,7 @@ function PortfolioCard({ project: p, index }) {
         <motion.div layout style={{ width: '100%' }}>
           {p.demo && (
             <a href={p.demo} target="_blank" rel="noreferrer"
+              onClick={(e) => e.stopPropagation()} // Prevents the card from closing when clicking the link
               style={{
                 padding:'12px 16px', borderRadius:12,
                 background: expanded ? p.color : 'rgba(255,255,255,0.1)',
@@ -1390,7 +1422,7 @@ function PortfolioShowcase() {
   const [tab, setTab]           = useState('projects');
   const [showAll, setShowAll]   = useState(false);
 
-  const shown = showAll ? DATA.projects : DATA.projects.slice(0,3);
+  const shown = DATA.projects; // <-- CHANGED THIS LINE
   const tabs  = ['projects','experience','tech stack'];
 
   return (
@@ -1789,26 +1821,7 @@ function ContactSection() {
           </a>
         </div>
       </motion.div>
-{/* Contact details */}
-      <motion.div
-        initial={{ opacity:0, y:30 }} whileInView={{ opacity:1, y:0 }}
-        style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:16, marginTop:32 }}
-      >
-        {[
-          { label:'Email',    value:'mohammedirfan.a02@gmail.com',             href:'mailto:mohammedirfan.a02@gmail.com' },
-          { label:'Phone',    value:'+91 7034208710',                            href:'tel:+917034208710' },
-          { label:'LinkedIn', value:'linkedin.com/in/mohammed-irfan-a-7ba342368', href:'https://www.linkedin.com/in/mohammed-irfan-a-7ba342368' },
-          { label:'Location', value:'Palakkad, Kerala',                         href:null },
-        ].map((item, i) => (
-          <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'14px 24px', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, background:'rgba(255,255,255,0.02)', minWidth:200 }}>
-            <span style={{ fontFamily:"'DM Mono',monospace", fontSize:9, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(255,255,255,0.3)' }}>{item.label}</span>
-            {item.href
-              ? <a href={item.href} target={item.label==='LinkedIn'?'_blank':undefined} rel="noreferrer" style={{ fontSize:13, color:'rgba(255,255,255,0.75)', textDecoration:'none', textAlign:'center', wordBreak:'break-all' }}>{item.value}</a>
-              : <span style={{ fontSize:13, color:'rgba(255,255,255,0.75)', textAlign:'center' }}>{item.value}</span>
-            }
-          </div>
-        ))}
-      </motion.div>
+
       <style>{`
         @media(min-width:768px){ .cont-pad{ padding:80px 40px 96px!important; } }
       `}</style>
@@ -2035,26 +2048,52 @@ function VirtualIrfanBot() {
   return (
     <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, fontFamily: 'sans-serif' }}>
       
-      {/* UPDATE: Image Avatar Button */}
+     
+      {/* PREMIUM AVATAR BUTTON */}
       <motion.button 
-        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.08 }} 
+        whileTap={{ scale: 0.95 }}
         onClick={toggleBotOpen}
         style={{
-          width: '75px', height: '75px', background: 'transparent',
-          border: 'none', cursor: 'pointer', padding: 0,
-          filter: isOpen ? 'none' : 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'
+          width: '75px', height: '75px', 
+          background: '#1a1a1a', // Clean dark background behind the avatar
+          borderRadius: '50%', // Forces a perfect circle
+          border: '2px solid rgba(255, 255, 255, 0.1)', // Subtle premium ring
+          cursor: 'pointer', padding: 0,
+          boxShadow: isOpen ? 'none' : '0 10px 25px rgba(0,0,0,0.6)',
+          overflow: 'hidden', // Clips the image to stay inside the circle
+          position: 'relative',
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}
       >
         {isOpen ? (
-          <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#ff3333', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', margin: '0 auto' }}>
+          <div style={{ width: '100%', height: '100%', background: '#ff3333', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
             ✕
           </div>
         ) : (
-          <img 
-            src="/bot-avatar.jpg" 
-            alt="Irfan Bot Avatar" 
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-          />
+          <>
+            <img 
+              src="/bot-avatar.png" // Make sure you are using the new PNG!
+              alt="Virtual Irfan" 
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover', // Fills the circle perfectly
+                transform: 'scale(1.15)', // Zooms in slightly to focus on the face
+                marginTop: '5px' // Nudges the face down slightly if needed
+              }} 
+            />
+            {/* Green Online Status Indicator */}
+            <div style={{
+              position: 'absolute',
+              bottom: '4px', right: '4px',
+              width: '14px', height: '14px',
+              backgroundColor: '#10b981', // Emerald green
+              border: '2px solid #1a1a1a', // Matches button background to create a cutout effect
+              borderRadius: '50%',
+              boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)' // Subtle green glow
+            }} />
+          </>
         )}
       </motion.button>
 
