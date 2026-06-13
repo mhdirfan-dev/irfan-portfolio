@@ -1,23 +1,60 @@
 {
   "name": "Mohammed Irfan A",
-  "role": "AI Engineering & Full-Stack Developer",
+  "dob": "22/02/2004",
+  "location": "Palakkad, Kerala",
+  "role": "AI Engineer & Full-Stack Developer",
+  "professional_focus": "Deeply focused on Artificial Intelligence Engineering, Computer Vision, Generative AI, and building intelligent full-stack systems (like RAG architectures and multi-step reasoning agents) that bridge theoretical AI with practical, real-world applications.",
   "education": {
-    "current": "6th Semester B.Tech in Computer Science Engineering (Specialization in AI & ML) at Nehru College of Engineering and Research Centre (NCERC), Thrissur, Kerala",
-    "previous": "Diploma in Computer Engineering from St. Mary’s Polytechnic College"
+    "current": "7th Semester B.Tech in Computer Science Engineering (Specialization in AI & ML) at Nehru College of Engineering and Research Centre (NCERC), Thrissur, Kerala",
+    "previous": "Diploma in Computer Engineering from St. Mary's Polytechnic College"
   },
   "key_projects": [
     {
-      "title": "Autonomous Campus Fleet Management System",
-      "details": "An automated campus gate logging system using YOLOv12 for vehicle detection, an optimized YOLO model for license plates, and EasyOCR for text parsing. Employs a Flask backend, MongoDB, Socket.IO, and real-time Telegram alerts."
+      "title": "LinkedAgent",
+      "details": "An AI-powered LinkedIn post intelligence agent built for the Agents League Hackathon 2026 (Microsoft Foundry IQ Track). Transforms notes into optimized posts using a 10-step reasoning chain powered by LLaMA 3.3 70B via Groq."
+    },
+    {
+      "title": "BizBrain",
+      "details": "An AI-powered business intelligence agent that acts as a strategic brain-for-hire. Digests business data and generates psychology-backed strategies using a 6-pillar reasoning engine and LLaMA 3.3 70B."
     },
     {
       "title": "Kerala Career Compass",
-      "details": "An AI-powered guidance system serving Kerala students. Implements a Retrieval-Augmented Generation (RAG) architecture streaming institutional data out of MongoDB into Llama 3.1."
+      "details": "A bilingual AI-powered career guidance platform for Kerala students. Implements a Retrieval-Augmented Generation (RAG) architecture streaming institutional data out of MongoDB into Llama 3.1."
+    },
+    {
+      "title": "NCERC Campus Fleet Management System",
+      "details": "An automated campus gate logging system using YOLOv12 for vehicle detection, an optimized YOLO model for license plates, and EasyOCR for text parsing. Employs a Flask backend, MongoDB, Socket.IO, and real-time Telegram alerts.",
+      "team": "Mohammed Irfan A, Salvin Sunny, Bhavya Biju, Diya Dinen"
+    },
+    {
+      "title": "Picto Pro",
+      "details": "A Generative AI application built for educators that converts text prompts and images into educational videos using a fully automated Python multimedia pipeline."
     }
   ],
   "technical_skills": {
-    "languages_and_frameworks": ["MongoDB", "Express.js", "React.js", "Node.js (MERN Stack)", "Flask", "Python", "JavaScript"],
-    "ai_vision": ["YOLOv12", "EasyOCR", "Computer Vision", "LLM Fine-Tuning/Integration", "RAG Systems"]
+    "ai_engineering": [
+      "YOLOv12", 
+      "EasyOCR", 
+      "Computer Vision", 
+      "Generative AI", 
+      "LLM fine-tuning & Integration", 
+      "RAG Systems", 
+      "Prompt Engineering", 
+      "Foundry IQ Pattern"
+    ],
+    "languages_and_frameworks": [
+      "Python", 
+      "JavaScript", 
+      "React.js", 
+      "Node.js (MERN Stack)", 
+      "Express.js", 
+      "MongoDB", 
+      "Flask"
+    ]
   },
-  "hobbies": ["Playing football", "Video games", "Watching movies", "Traveling"]
+  "hobbies": [
+    "Video games", 
+    "Watching movies", 
+    "Traveling"
+  ]
 }

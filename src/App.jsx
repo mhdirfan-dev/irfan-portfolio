@@ -1321,7 +1321,8 @@ function AboutSection() {
 /* ================================================================
    PORTFOLIO SHOWCASE
 ================================================================ */
-function PortfolioCard({ project: p, index }) {
+
+function PortfolioCard({ project: p, index, hoverEnabled = true }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = p.icon;
 
@@ -1331,8 +1332,10 @@ function PortfolioCard({ project: p, index }) {
       initial={{ opacity:0, x: index%2===0 ? -50 : 50, y:20 }}
       whileInView={{ opacity:1, x:0, y:0 }}
       transition={{ duration:0.5 }}
-      onHoverStart={() => setExpanded(true)}
-      onHoverEnd={() => setExpanded(false)}
+      // Only auto-expand on hover if hoverEnabled is true
+      onHoverStart={() => hoverEnabled && setExpanded(true)}
+      onHoverEnd={() => hoverEnabled && setExpanded(false)}
+      // Clicking always works
       onClick={() => setExpanded(!expanded)}
       style={{
         position:'relative', borderRadius:26,
@@ -1415,7 +1418,7 @@ function PortfolioCard({ project: p, index }) {
         <motion.div layout style={{ width: '100%' }}>
           {p.demo && (
             <a href={p.demo} target="_blank" rel="noreferrer"
-              onClick={(e) => e.stopPropagation()} // Prevents the card from closing when clicking the link
+              onClick={(e) => e.stopPropagation()} 
               style={{
                 padding:'12px 16px', borderRadius:12,
                 background: expanded ? p.color : 'rgba(255,255,255,0.1)',
@@ -1437,11 +1440,27 @@ function PortfolioCard({ project: p, index }) {
 
 function PortfolioShowcase() {
   const [tab, setTab]           = useState('projects');
-  const [showAll, setShowAll]   = useState(false);
+  const [viewMode, setViewMode] = useState('paginated'); // 'paginated' or 'full'
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Show all projects if showAll is true, otherwise show only the first 3
-  const shown = showAll ? DATA.projects : DATA.projects.slice(0, 3);
   const tabs  = ['projects','experience','tech stack'];
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(DATA.projects.length / itemsPerPage);
+
+  // Determine which projects to show based on the current view mode
+  let shownProjects = [];
+  if (viewMode === 'full') {
+    shownProjects = DATA.projects;
+  } else {
+    const startIndex = currentPage * itemsPerPage;
+    shownProjects = DATA.projects.slice(startIndex, startIndex + itemsPerPage);
+  }
+
+  // Hover auto-expand is ONLY enabled when showing 4 projects (paginated view)
+  const hoverEnabled = viewMode === 'paginated';
+
+  const handleNext = () => setCurrentPage((prev) => (prev + 1) % totalPages);
+  const handlePrev = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
     <section
@@ -1526,21 +1545,52 @@ function PortfolioShowcase() {
         {tab === 'projects' && (
           <motion.div layout>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:24, alignItems: 'start' }}>
-              {shown.map((p, i) => (
+              {shownProjects.map((p, i) => (
                 <PortfolioCard
-                  key={i} index={i} project={p}
+                  key={p.title} // Changed to title to prevent animation glitches when changing pages
+                  index={i} 
+                  project={p}
+                  hoverEnabled={hoverEnabled} // Passes the hover setting to the card
                 />
               ))}
             </div>
 
-            {/* "View More" / "View Less" Button */}
-            {DATA.projects.length > 3 && (
-              <motion.div 
-                layout
-                style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}
-              >
+            {/* Pagination Side/Row Buttons (Only show if in Paginated Mode) */}
+            {viewMode === 'paginated' && totalPages > 1 && (
+              <motion.div layout style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '32px' }}>
                 <button
-                  onClick={() => setShowAll(!showAll)}
+                  onClick={handlePrev}
+                  disabled={currentPage === 0}
+                  style={{
+                    padding: '10px 20px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)', color: currentPage === 0 ? 'rgba(255,255,255,0.3)' : 'white',
+                    fontSize: '13px', cursor: currentPage === 0 ? 'default' : 'pointer', transition: 'all 0.3s'
+                  }}
+                >
+                  ← Prev
+                </button>
+                <button
+                  onClick={handleNext}
+                  disabled={currentPage === totalPages - 1}
+                  style={{
+                    padding: '10px 20px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)', color: currentPage === totalPages - 1 ? 'rgba(255,255,255,0.3)' : 'white',
+                    fontSize: '13px', cursor: currentPage === totalPages - 1 ? 'default' : 'pointer', transition: 'all 0.3s'
+                  }}
+                >
+                  Next →
+                </button>
+              </motion.div>
+            )}
+
+            {/* "Show Full Projects" Bottom Button */}
+            {DATA.projects.length > 4 && (
+              <motion.div layout style={{ display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
+                <button
+                  onClick={() => {
+                    setViewMode(viewMode === 'full' ? 'paginated' : 'full');
+                    setCurrentPage(0); // Reset page when switching
+                  }}
                   style={{
                     padding: '12px 28px',
                     borderRadius: '999px',
@@ -1564,7 +1614,7 @@ function PortfolioShowcase() {
                     e.target.style.color = 'white';
                   }}
                 >
-                  {showAll ? '↑ View Less' : '↓ View More Projects'}
+                  {viewMode === 'full' ? '↑ View Paginated' : '↓ Show Full Projects'}
                 </button>
               </motion.div>
             )}
