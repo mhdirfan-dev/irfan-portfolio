@@ -188,6 +188,23 @@ projects: [
         'Fully automated Python pipeline for multimedia production',
       ],
     },
+    {
+      title: 'LinkedAgent',
+      role:  'AI-Powered LinkedIn Post Intelligence',
+      desc:  'An AI reasoning agent built for the Agents League Hackathon 2026 (Microsoft Foundry IQ Track). It transforms rough technical notes into algorithm-optimized, publish-ready LinkedIn posts using a 10-step reasoning chain powered by LLaMA 3.3 70B (via Groq).\n\nThe system utilizes a grounded knowledge layer to enforce structural rules. It includes a real-time trending topic radar, a dynamic analytics engine that self-calibrates based on post history, and automatic PDF carousel generation for maximum impression reach.',
+      tech:  ['Vanilla JS', 'Groq API (LLaMA 3.3)', 'Foundry IQ Pattern', 'jsPDF', 'Vercel'],
+      icon:  FileText,
+      color: '#0077b5', 
+      demo:  'https://linked-agent.vercel.app/',
+      image: '/linked-agent.png', 
+      features: [
+        '10-Step Reasoning Chain: Extracts, formats, and scores using Groq LLaMA 3.3 70B',
+        'Dynamic Rule Engine: Self-updating analytics that recalibrate based on post history',
+        'Trending Topic Radar: Live keyword scanning against 8 LinkedIn trending categories',
+        'Auto-Carousel PDF Export: Converts markdown tables/lists into swipeable slide decks',
+        'Pre-Publish Checklist: 7-point algorithmic check for hooks, tags, and formatting',
+      ],
+    },
   ],
   experience: [
     {
