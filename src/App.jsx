@@ -1439,7 +1439,8 @@ function PortfolioShowcase() {
   const [tab, setTab]           = useState('projects');
   const [showAll, setShowAll]   = useState(false);
 
-  const shown = DATA.projects; // <-- CHANGED THIS LINE
+  // Show all projects if showAll is true, otherwise show only the first 3
+  const shown = showAll ? DATA.projects : DATA.projects.slice(0, 3);
   const tabs  = ['projects','experience','tech stack'];
 
   return (
@@ -1521,18 +1522,56 @@ function PortfolioShowcase() {
       {/* Tab content */}
       <div style={{ minHeight:400 }}>
 
-        {/* PROJECTS */}
+        {/* PROJECTS TAB */}
         {tab === 'projects' && (
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:24, alignItems: 'start' }}>
-            {shown.map((p, i) => (
-              <PortfolioCard
-                key={i} index={i} project={p}
-              />
-            ))}
-          </div>
+          <motion.div layout>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:24, alignItems: 'start' }}>
+              {shown.map((p, i) => (
+                <PortfolioCard
+                  key={i} index={i} project={p}
+                />
+              ))}
+            </div>
+
+            {/* "View More" / "View Less" Button */}
+            {DATA.projects.length > 3 && (
+              <motion.div 
+                layout
+                style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}
+              >
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  style={{
+                    padding: '12px 28px',
+                    borderRadius: '999px',
+                    background: 'transparent',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: 'white',
+                    fontSize: '13px',
+                    fontFamily: "'DM Mono', monospace",
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.background = 'white';
+                    e.target.style.color = 'black';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = 'transparent';
+                    e.target.style.color = 'white';
+                  }}
+                >
+                  {showAll ? '↑ View Less' : '↓ View More Projects'}
+                </button>
+              </motion.div>
+            )}
+          </motion.div>
         )}
 
-        {/* EXPERIENCE */}
+        {/* EXPERIENCE TAB */}
         {tab === 'experience' && (
           <div style={{ display:'flex', flexDirection:'column', gap:16, maxWidth:720, margin:'0 auto' }}>
             {DATA.experience.map((e, i) => (
@@ -1567,7 +1606,7 @@ function PortfolioShowcase() {
           </div>
         )}
 
-        {/* TECH STACK */}
+        {/* TECH STACK TAB */}
         {tab === 'tech stack' && (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:24 }}>
             {DATA.skills.map((g, i) => (
