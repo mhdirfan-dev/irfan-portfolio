@@ -12,12 +12,14 @@ app.use(Express.json());
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Load your personal data file
-const irfanProfile = JSON.parse(readFileSync('./irfan_data.json', 'utf-8'));
+// Note: The readFileSync line was moved from here into the app.post route below!
 
 app.post('/api/virtual-irfan', async (req, res) => {
   try {
     const { message, chatHistory } = req.body;
+
+    // ⬇️ IT IS NOW HERE: The server reads the file fresh on every single message
+    const irfanProfile = JSON.parse(readFileSync('./irfan_data.json', 'utf-8'));
 
     const systemPrompt = `
       You are the "Virtual AI Twin" of Mohammed Irfan A, interacting with visitors on his portfolio website.
@@ -54,4 +56,7 @@ app.post('/api/virtual-irfan', async (req, res) => {
 
 // Add this simple health-check route
 app.get('/', (req, res) => res.send('Irfan Bot Backend is Awake!'));
-app.listen(5000, () => console.log('Virtual Twin API active on port 5000'));
+
+// Render requires dynamic port binding, so we use process.env.PORT
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => console.log(`Virtual Twin API active on port ${PORT}`));
