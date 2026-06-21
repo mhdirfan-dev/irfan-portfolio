@@ -2115,7 +2115,7 @@ function VirtualIrfanBot() {
     stopListening(); 
 
     try {
-      const response = await fetch('https://irfan-bot-backend.onrender.com/api/virtual-irfan', {
+      const response = await fetch('/api/virtual-irfan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: textToSend, chatHistory: chatHistoryRef.current }),

@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# Mohammed Irfan A — Interactive AI Portfolio 🚀
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A highly interactive, 3D-physics-enabled personal portfolio built with React and Three.js. It features a custom "Virtual AI Twin" (powered by LLaMA 3.3 via Groq) that can hold conversations with visitors in both English and Malayalam.
 
-## Available Scripts
+🌐 **Live Demo:** [irfan.dev](https://irfan-portfolio.vercel.app/) *(Replace with your actual Vercel link)*
 
-In the project directory, you can run:
+## ✨ Key Features
+* **Interactive 3D Physics:** A draggable, physics-based ID card lanyard built using `@react-three/fiber` and `@react-three/rapier`.
+* **Virtual AI Assistant:** An integrated chatbot powered by Groq (LLaMA 3.3 70B) acting as a digital twin. It uses a local RAG approach to answer questions about my experience, projects, and skills.
+* **Multilingual Voice Capabilities:** The bot supports speech-to-text (listening) and text-to-speech (speaking) and automatically switches to Malayalam if spoken to in Manglish/Malayalam.
+* **Single-Page Architecture:** Smooth scrolling, dynamic `framer-motion` animations, and glassmorphism UI components.
 
-### `npm start`
+## 🛠️ Tech Stack
+* **Frontend:** React 18, Framer Motion, Lucide React
+* **3D Rendering:** Three.js, React Three Fiber, React Three Drei, Rapier Physics
+* **AI & Backend:** Groq API (LLaMA 3.3), Vercel Serverless Functions (`/api` routing)
+* **Styling:** Inline dynamic styling with injected global CSS variables.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## ⚙️ Running the Project Locally
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Because this project uses Vercel Serverless Functions for the AI backend, you need the Vercel CLI to run it locally.
 
-### `npm test`
+### 1. Install Dependencies
+```bash
+npm install
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Environment Variables
 
-### `npm run build`
+Create a .env file in the root directory and add your Groq API key:
+Code snippet
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+GROQ_API_KEY=gsk_your_api_key_here
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Start the Development Server
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Use npx vercel dev to start both the React frontend and the Serverless API simultaneously:
+Bash
 
-### `npm run eject`
+npx vercel dev
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The app will be available at http://localhost:3000.
+📂 Project Structure
+Plaintext
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+irfan-portfolio/
+ ├── api/
+ │    ├── virtual-irfan.js   # Serverless function for the AI bot
+ │    └── irfan_data.json    # Knowledge base for the AI twin
+ ├── public/                 # Static assets and project screenshots
+ ├── src/
+ │    ├── App.jsx            # The core Single-Page Application
+ │    └── index.js           # React entry point
+ ├── .env                    # Local API keys (Gitignored)
+ └── package.json
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+📬 Contact
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    Email: mohammedirfan.a02@gmail.com
 
-## Learn More
+    LinkedIn: linkedin.com/in/mohammed-irfan-a-7ba342368
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Step 5: Push the Cleaned Project to GitHub
+Once you have deleted the extra files, updated `index.js`, and saved the `README.md`, push it all to GitHub so your repo looks incredibly professional:
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+git add .
+git commit -m "Cleaned up unused boilerplate files and updated README documentation"
+git push

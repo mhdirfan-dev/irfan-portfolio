@@ -1,25 +1,22 @@
-import Express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
 import Groq from 'groq-sdk';
-import { readFileSync } from 'fs';
+import fs from 'fs';
+import path from 'path';
 
-dotenv.config();
-
-const app = Express();
-app.use(cors());
-app.use(Express.json());
-
+// Vercel automatically reads process.env.GROQ_API_KEY from your project settings
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Note: The readFileSync line was moved from here into the app.post route below!
+export default async function handler(req, res) {
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-app.post('/api/virtual-irfan', async (req, res) => {
   try {
     const { message, chatHistory } = req.body;
 
-    // ⬇️ IT IS NOW HERE: The server reads the file fresh on every single message
-    const irfanProfile = JSON.parse(readFileSync('./irfan_data.json', 'utf-8'));
+    // Safely read the JSON file in the Vercel cloud environment
+    const dataPath = path.join(process.cwd(), 'api', 'irfan_data.json');
+    const irfanProfile = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
 
     const systemPrompt = `
       You are the "Virtual AI Twin" of Mohammed Irfan A, interacting with visitors on his portfolio website.
@@ -37,26 +34,21 @@ app.post('/api/virtual-irfan', async (req, res) => {
     `;
 
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile", // Fast, accurate, outstanding multilingual capabilities
+      model: "llama-3.3-70b-versatile", 
       messages: [
         { role: "system", content: systemPrompt },
-        ...chatHistory, // Pass preceding conversational logs to retain memory context
+        ...chatHistory, 
         { role: "user", content: message }
       ],
       temperature: 0.6,
       max_tokens: 300
     });
 
-    res.json({ reply: response.choices[0].message.content });
+    // Send the response back to the frontend
+    res.status(200).json({ reply: response.choices[0].message.content });
+
   } catch (error) {
     console.error("AI Twin System Error:", error);
     res.status(500).json({ error: "Failed to fetch response from AI clone." });
   }
-});
-
-// Add this simple health-check route
-app.get('/', (req, res) => res.send('Irfan Bot Backend is Awake!'));
-
-// Render requires dynamic port binding, so we use process.env.PORT
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => console.log(`Virtual Twin API active on port ${PORT}`));
+}
